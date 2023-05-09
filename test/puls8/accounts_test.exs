@@ -1,5 +1,5 @@
 defmodule Puls8.AccountsTest do
-  use Puls8.DataCase
+  use Puls8.DataCase, async: true
 
   alias Puls8.Accounts
 
@@ -299,9 +299,9 @@ defmodule Puls8.AccountsTest do
     end
 
     test "deletes all tokens for the given user", %{user: user} do
-      _ = Accounts.generate_user_session_token(user)
+      _user = Accounts.generate_user_session_token(user)
 
-      {:ok, _} =
+      {:ok, _user} =
         Accounts.update_user_password(user, valid_user_password(), %{
           password: "new valid password"
         })
@@ -494,8 +494,8 @@ defmodule Puls8.AccountsTest do
     end
 
     test "deletes all tokens for the given user", %{user: user} do
-      _ = Accounts.generate_user_session_token(user)
-      {:ok, _} = Accounts.reset_user_password(user, %{password: "new valid password"})
+      _user = Accounts.generate_user_session_token(user)
+      {:ok, _user} = Accounts.reset_user_password(user, %{password: "new valid password"})
       refute Repo.get_by(UserToken, user_id: user.id)
     end
   end

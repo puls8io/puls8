@@ -1,5 +1,5 @@
 defmodule Puls8Web.UserSettingsLiveTest do
-  use Puls8Web.ConnCase
+  use Puls8Web.ConnCase, async: true
 
   alias Puls8.Accounts
   import Phoenix.LiveViewTest

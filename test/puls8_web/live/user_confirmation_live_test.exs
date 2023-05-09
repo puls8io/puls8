@@ -1,5 +1,5 @@
 defmodule Puls8Web.UserConfirmationLiveTest do
-  use Puls8Web.ConnCase
+  use Puls8Web.ConnCase, async: true
 
   import Phoenix.LiveViewTest
   import Puls8.AccountsFixtures

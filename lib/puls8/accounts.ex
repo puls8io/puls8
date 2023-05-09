@@ -139,10 +139,10 @@ defmodule Puls8.Accounts do
 
     with {:ok, query} <- UserToken.verify_change_email_token_query(token, context),
          %UserToken{sent_to: email} <- Repo.one(query),
-         {:ok, _} <- Repo.transaction(user_email_multi(user, email, context)) do
+         {:ok, _user} <- Repo.transaction(user_email_multi(user, email, context)) do
       :ok
     else
-      _ -> :error
+      _rest -> :error
     end
   end
 
@@ -211,7 +211,7 @@ defmodule Puls8.Accounts do
     |> Repo.transaction()
     |> case do
       {:ok, %{user: user}} -> {:ok, user}
-      {:error, :user, changeset, _} -> {:error, changeset}
+      {:error, :user, changeset, _o} -> {:error, changeset}
     end
   end
 
@@ -279,7 +279,7 @@ defmodule Puls8.Accounts do
          {:ok, %{user: user}} <- Repo.transaction(confirm_user_multi(user)) do
       {:ok, user}
     else
-      _ -> :error
+      _rest -> :error
     end
   end
 
@@ -324,7 +324,7 @@ defmodule Puls8.Accounts do
          %User{} = user <- Repo.one(query) do
       user
     else
-      _ -> nil
+      _rest -> nil
     end
   end
 
@@ -347,7 +347,7 @@ defmodule Puls8.Accounts do
     |> Repo.transaction()
     |> case do
       {:ok, %{user: user}} -> {:ok, user}
-      {:error, :user, changeset, _} -> {:error, changeset}
+      {:error, :user, changeset, _o} -> {:error, changeset}
     end
   end
 end

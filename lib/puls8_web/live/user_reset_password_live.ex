@@ -46,7 +46,7 @@ defmodule Puls8Web.UserResetPasswordLive do
         %{user: user} ->
           Accounts.change_user_password(user)
 
-        _ ->
+        _any ->
           %{}
       end
 

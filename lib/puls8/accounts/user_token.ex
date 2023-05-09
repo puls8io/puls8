@@ -145,7 +145,7 @@ defmodule Puls8.Accounts.UserToken do
   database and if it has not expired (after @change_email_validity_in_days).
   The context must always start with "change:".
   """
-  def verify_change_email_token_query(token, "change:" <> _ = context) do
+  def verify_change_email_token_query(token, "change:" <> _rest = context) do
     case Base.url_decode64(token, padding: false) do
       {:ok, decoded_token} ->
         hashed_token = :crypto.hash(@hash_algorithm, decoded_token)
@@ -175,7 +175,7 @@ defmodule Puls8.Accounts.UserToken do
     from t in UserToken, where: t.user_id == ^user.id
   end
 
-  def user_and_contexts_query(user, [_ | _] = contexts) do
+  def user_and_contexts_query(user, [_h | _t] = contexts) do
     from t in UserToken, where: t.user_id == ^user.id and t.context in ^contexts
   end
 end
