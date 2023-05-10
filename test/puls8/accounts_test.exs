@@ -505,4 +505,60 @@ defmodule Puls8.AccountsTest do
       refute inspect(%User{password: "123456"}) =~ "password: \"123456\""
     end
   end
+
+  describe "teams" do
+    alias Puls8.Accounts.Team
+
+    import Puls8.AccountsFixtures
+
+    @invalid_attrs %{name: nil, slug: nil}
+
+    test "list_teams/0 returns all teams" do
+      team = team_fixture()
+      assert Accounts.list_teams() == [team]
+    end
+
+    test "get_team!/1 returns the team with given id" do
+      team = team_fixture()
+      assert Accounts.get_team!(team.id) == team
+    end
+
+    test "create_team/1 with valid data creates a team" do
+      valid_attrs = %{name: "some name", slug: "some slug"}
+
+      assert {:ok, %Team{} = team} = Accounts.create_team(valid_attrs)
+      assert team.name == "some name"
+      assert team.slug == "some slug"
+    end
+
+    test "create_team/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Accounts.create_team(@invalid_attrs)
+    end
+
+    test "update_team/2 with valid data updates the team" do
+      team = team_fixture()
+      update_attrs = %{name: "some updated name", slug: "some updated slug"}
+
+      assert {:ok, %Team{} = team} = Accounts.update_team(team, update_attrs)
+      assert team.name == "some updated name"
+      assert team.slug == "some updated slug"
+    end
+
+    test "update_team/2 with invalid data returns error changeset" do
+      team = team_fixture()
+      assert {:error, %Ecto.Changeset{}} = Accounts.update_team(team, @invalid_attrs)
+      assert team == Accounts.get_team!(team.id)
+    end
+
+    test "delete_team/1 deletes the team" do
+      team = team_fixture()
+      assert {:ok, %Team{}} = Accounts.delete_team(team)
+      assert_raise Ecto.NoResultsError, fn -> Accounts.get_team!(team.id) end
+    end
+
+    test "change_team/1 returns a team changeset" do
+      team = team_fixture()
+      assert %Ecto.Changeset{} = Accounts.change_team(team)
+    end
+  end
 end

@@ -28,4 +28,19 @@ defmodule Puls8.AccountsFixtures do
     [_, token | _] = String.split(captured_email.text_body, "[TOKEN]")
     token
   end
+
+  @doc """
+  Generate a team.
+  """
+  def team_fixture(attrs \\ %{}) do
+    {:ok, team} =
+      attrs
+      |> Enum.into(%{
+        name: "some name",
+        slug: "some slug"
+      })
+      |> Puls8.Accounts.create_team()
+
+    team
+  end
 end
