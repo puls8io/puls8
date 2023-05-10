@@ -524,11 +524,11 @@ defmodule Puls8.AccountsTest do
     end
 
     test "create_team/1 with valid data creates a team" do
-      valid_attrs = %{name: "some name", slug: "some slug"}
+      valid_attrs = %{name: "some name", slug: "some-slug"}
 
       assert {:ok, %Team{} = team} = Accounts.create_team(valid_attrs)
       assert team.name == "some name"
-      assert team.slug == "some slug"
+      assert team.slug == "some-slug"
     end
 
     test "create_team/1 with invalid data returns error changeset" do
@@ -537,11 +537,11 @@ defmodule Puls8.AccountsTest do
 
     test "update_team/2 with valid data updates the team" do
       team = team_fixture()
-      update_attrs = %{name: "some updated name", slug: "some updated slug"}
+      update_attrs = %{name: "some updated name", slug: "some-updated-slug"}
 
       assert {:ok, %Team{} = team} = Accounts.update_team(team, update_attrs)
       assert team.name == "some updated name"
-      assert team.slug == "some updated slug"
+      assert team.slug == "some-updated-slug"
     end
 
     test "update_team/2 with invalid data returns error changeset" do
