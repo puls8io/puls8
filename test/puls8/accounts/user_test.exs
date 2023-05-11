@@ -1,4 +1,4 @@
-defmodule Puls8.AccountsTest do
+defmodule Puls8.Accounts.UserTest do
   use ExUnit.Case, async: true
   alias Puls8.Accounts.User, as: SUT
 

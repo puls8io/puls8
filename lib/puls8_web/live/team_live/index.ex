@@ -4,7 +4,7 @@ defmodule Puls8Web.TeamLive.Index do
   alias Puls8.Accounts
   alias Puls8.Accounts.Team
 
-  @impl true
+  @impl Phoenix.LiveView
   def mount(_params, _session, socket) do
     teams = Accounts.list_teams()
 
@@ -16,7 +16,7 @@ defmodule Puls8Web.TeamLive.Index do
     end
   end
 
-  @impl true
+  @impl Phoenix.LiveView
   def handle_params(params, _url, socket) do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
@@ -33,12 +33,12 @@ defmodule Puls8Web.TeamLive.Index do
     |> assign(:team, nil)
   end
 
-  @impl true
+  @impl Phoenix.LiveView
   def handle_info({Puls8Web.TeamLive.FormComponent, {:saved, team}}, socket) do
     {:noreply, stream_insert(socket, :teams, team)}
   end
 
-  @impl true
+  @impl Phoenix.LiveView
   def handle_event("delete", %{"id" => id}, socket) do
     team = Accounts.get_team!(id)
     {:ok, _} = Accounts.delete_team(team)

@@ -1,5 +1,5 @@
 defmodule Puls8Web.TeamLiveTest do
-  use Puls8Web.ConnCase
+  use Puls8Web.ConnCase, async: true
 
   import Phoenix.LiveViewTest
   import Puls8.AccountsFixtures
@@ -7,7 +7,7 @@ defmodule Puls8Web.TeamLiveTest do
   @create_attrs %{name: "some new name", slug: "some-new-slug"}
   @invalid_attrs %{name: nil, slug: nil}
 
-  defp create_team(_) do
+  defp create_team(_context) do
     team = team_fixture()
     %{team: team}
   end

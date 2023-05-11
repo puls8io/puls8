@@ -3,7 +3,7 @@ defmodule Puls8Web.TeamLive.FormComponent do
 
   alias Puls8.Accounts
 
-  @impl true
+  @impl Phoenix.LiveComponent
   def render(assigns) do
     ~H"""
     <div>
@@ -29,7 +29,7 @@ defmodule Puls8Web.TeamLive.FormComponent do
     """
   end
 
-  @impl true
+  @impl Phoenix.LiveComponent
   def update(%{team: team} = assigns, socket) do
     changeset = Accounts.change_team(team)
 
@@ -39,7 +39,7 @@ defmodule Puls8Web.TeamLive.FormComponent do
      |> assign_form(changeset)}
   end
 
-  @impl true
+  @impl Phoenix.LiveComponent
   def handle_event("validate", %{"team" => team_params}, socket) do
     team_params =
       if socket.assigns.action == :new and socket.assigns.name != team_params["name"] do
