@@ -16,6 +16,8 @@ defmodule Puls8Web.TeamLiveTest do
     setup [:create_team]
 
     test "lists all teams", %{conn: conn, team: team} do
+      _team1 = team_fixture(%{slug: "plug-2"})
+
       {:ok, _index_live, html} =
         conn
         |> log_in_user(user_fixture())
@@ -25,7 +27,18 @@ defmodule Puls8Web.TeamLiveTest do
       assert html =~ team.name
     end
 
+    test "redirects to first team if there is only one team", %{conn: conn, team: team} do
+      {:ok, _index_live, html} =
+        conn
+        |> log_in_user(user_fixture())
+        |> live(~p"/teams/some-slug")
+
+      assert html =~ team.name
+    end
+
     test "saves new team", %{conn: conn} do
+      _team1 = team_fixture(%{slug: "plug-2"})
+
       {:ok, index_live, _html} =
         conn
         |> log_in_user(user_fixture())
@@ -52,6 +65,7 @@ defmodule Puls8Web.TeamLiveTest do
     end
 
     test "deletes team in listing", %{conn: conn, team: team} do
+      _team1 = team_fixture(%{slug: "plug-2"})
       {:ok, index_live, _html} = live(conn, ~p"/teams")
 
       assert index_live |> element("#teams-#{team.id} a", "Delete") |> render_click()

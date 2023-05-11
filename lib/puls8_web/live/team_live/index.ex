@@ -6,7 +6,14 @@ defmodule Puls8Web.TeamLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :teams, Accounts.list_teams())}
+    teams = Accounts.list_teams()
+
+    if length(teams) == 1 do
+      team = List.first(teams)
+      {:ok, push_navigate(socket, to: ~p"/teams/#{team}")}
+    else
+      {:ok, stream(socket, :teams, teams)}
+    end
   end
 
   @impl true
