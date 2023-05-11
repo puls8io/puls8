@@ -4,6 +4,7 @@ defmodule Puls8.Accounts.Team do
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
+  @derive {Phoenix.Param, key: :slug}
   schema "teams" do
     field :name, :string
     field :slug, :string

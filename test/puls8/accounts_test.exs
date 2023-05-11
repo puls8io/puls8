@@ -523,6 +523,11 @@ defmodule Puls8.AccountsTest do
       assert Accounts.get_team!(team.id) == team
     end
 
+    test "get_team_by_slug!/1 returns the team with given slug" do
+      team = team_fixture()
+      assert Accounts.get_team_by_slug!(team.slug) == team
+    end
+
     test "create_team/1 with valid data creates a team" do
       valid_attrs = %{name: "some name", slug: "some-slug"}
 

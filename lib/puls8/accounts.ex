@@ -381,6 +381,7 @@ defmodule Puls8.Accounts do
 
   """
   def get_team!(id), do: Repo.get!(Team, id)
+  def get_team_by_slug!(slug), do: Repo.get_by!(Team, slug: slug)
 
   @doc """
   Creates a team.
