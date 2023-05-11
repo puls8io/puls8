@@ -24,13 +24,20 @@ defmodule Puls8Web.TeamLiveTest do
   describe "Index" do
     setup [:create_team, :create_user, :login_user]
 
-    test "lists all teams", %{conn: conn, team: team} do
-      _team1 = team_fixture(%{slug: "plug-2"})
+    test "lists only teams which current_user is member of", %{conn: conn, user: user} do
+      others_team = team_fixture(%{name: "others team", slug: "others-team"})
+      my_team01 = team_fixture(%{name: "my team 01", slug: "my-team-01"})
+      my_team02 = team_fixture(%{name: "my team 02", slug: "my-team-02"})
+
+      add_member_fixture(user, my_team01)
+      add_member_fixture(user, my_team02)
 
       {:ok, _index_live, html} = live(conn, ~p"/teams")
 
       assert html =~ "Listing Teams"
-      assert html =~ team.name
+      refute html =~ others_team.name
+      assert html =~ my_team01.name
+      assert html =~ my_team02.name
     end
 
     test "redirects to first team if there is only one team", %{
@@ -38,17 +45,11 @@ defmodule Puls8Web.TeamLiveTest do
       team: team,
       user: user
     } do
-      {:ok, _index_live, html} =
-        conn
-        |> log_in_user(user)
-        |> live(~p"/teams/some-slug")
-
-      assert html =~ team.name
+      add_member_fixture(user, team)
+      {_, {:live_redirect, %{to: "/teams/some-slug"}}} = live(conn, ~p"/teams")
     end
 
     test "saves new team for the current_user", %{conn: conn, user: user} do
-      _team1 = team_fixture(%{slug: "plug-2"})
-
       {:ok, index_live, _html} =
         conn
         |> live(~p"/teams")
@@ -70,14 +71,16 @@ defmodule Puls8Web.TeamLiveTest do
 
       html = render(index_live)
       assert html =~ "Team created successfully"
-      assert html =~ "some name"
+      assert html =~ "some new name"
 
       user = Puls8.Repo.reload!(user)
       assert [_team] = user.memberships
     end
 
-    test "deletes team in listing", %{conn: conn, team: team} do
-      _team1 = team_fixture(%{slug: "plug-2"})
+    test "deletes team in listing", %{conn: conn, team: team, user: user} do
+      my_other_team = team_fixture(slug: "my-other-team")
+      add_member_fixture(user, team)
+      add_member_fixture(user, my_other_team)
       {:ok, index_live, _html} = live(conn, ~p"/teams")
 
       assert index_live |> element("#teams-#{team.id} a", "Delete") |> render_click()

@@ -6,14 +6,15 @@ defmodule Puls8Web.TeamLive.Index do
 
   @impl Phoenix.LiveView
   def mount(_params, _session, socket) do
-    teams = Accounts.list_teams()
+    teams = Accounts.list_teams_for(socket.assigns.current_user)
 
-    if length(teams) == 1 do
-      team = List.first(teams)
-      {:ok, push_navigate(socket, to: ~p"/teams/#{team}")}
-    else
-      {:ok, stream(socket, :teams, teams)}
-    end
+    socket =
+      assign(socket,
+        first_team: List.first(teams),
+        team_count: length(teams)
+      )
+
+    {:ok, stream(socket, :teams, teams)}
   end
 
   @impl Phoenix.LiveView
@@ -28,9 +29,13 @@ defmodule Puls8Web.TeamLive.Index do
   end
 
   defp apply_action(socket, :index, _params) do
-    socket
-    |> assign(:page_title, "Listing Teams")
-    |> assign(:team, nil)
+    if socket.assigns.team_count == 1 do
+      push_navigate(socket, to: ~p"/teams/#{socket.assigns.first_team}")
+    else
+      socket
+      |> assign(:page_title, "Listing Teams")
+      |> assign(:team, nil)
+    end
   end
 
   @impl Phoenix.LiveView

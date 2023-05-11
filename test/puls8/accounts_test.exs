@@ -567,6 +567,15 @@ defmodule Puls8.AccountsTest do
       assert Accounts.list_teams() == [team]
     end
 
+    test "list_teams_for/1 returns all teams for the user" do
+      _other_team = team_fixture(slug: "other-team")
+      team = team_fixture()
+      user = user_fixture()
+      add_member_fixture(user, team)
+      user = Repo.reload!(user)
+      assert Accounts.list_teams_for(user) == [team]
+    end
+
     test "get_team!/1 returns the team with given id" do
       team = team_fixture()
       assert Accounts.get_team!(team.id) == team

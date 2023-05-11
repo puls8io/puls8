@@ -43,4 +43,8 @@ defmodule Puls8.AccountsFixtures do
 
     team
   end
+
+  def add_member_fixture(user, team, roles \\ []) do
+    Puls8.Accounts.add_membership(user, team, roles)
+  end
 end

@@ -390,6 +390,14 @@ defmodule Puls8.Accounts do
   end
 
   @doc """
+  Returns the list of teams for the given user
+  """
+  def list_teams_for(user) do
+    team_ids = Enum.map(user.memberships, & &1.team_id)
+    Repo.all(from t in Team, where: t.id in ^team_ids)
+  end
+
+  @doc """
   Gets a single team.
 
   Raises `Ecto.NoResultsError` if the Team does not exist.
