@@ -4,7 +4,7 @@ defmodule Puls8Web.TeamLiveTest do
   import Phoenix.LiveViewTest
   import Puls8.AccountsFixtures
 
-  @create_attrs %{name: "some name", slug: "some-slug"}
+  @create_attrs %{name: "some new name", slug: "some-new-slug"}
   @update_attrs %{name: "some updated name", slug: "some-updated-slug"}
   @invalid_attrs %{name: nil, slug: nil}
 

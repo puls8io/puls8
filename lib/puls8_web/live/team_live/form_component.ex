@@ -41,6 +41,13 @@ defmodule Puls8Web.TeamLive.FormComponent do
 
   @impl true
   def handle_event("validate", %{"team" => team_params}, socket) do
+    team_params =
+      if socket.assigns.action == :new and socket.assigns.name != team_params["name"] do
+        Map.put(team_params, "slug", Slug.slugify(team_params["name"]))
+      else
+        team_params
+      end
+
     changeset =
       socket.assigns.team
       |> Accounts.change_team(team_params)
@@ -84,7 +91,9 @@ defmodule Puls8Web.TeamLive.FormComponent do
   end
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
-    assign(socket, :form, to_form(changeset))
+    socket
+    |> assign(:form, to_form(changeset))
+    |> assign(:name, Ecto.Changeset.get_change(changeset, :name))
   end
 
   defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
