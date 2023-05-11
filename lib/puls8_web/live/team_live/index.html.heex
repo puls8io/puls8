@@ -18,7 +18,6 @@
     <div class="sr-only">
       <.link navigate={~p"/teams/#{team}"}>Show</.link>
     </div>
-    <.link patch={~p"/teams/#{team}/edit"}>Edit</.link>
   </:action>
   <:action :let={{id, team}}>
     <.link
@@ -30,7 +29,7 @@
   </:action>
 </.table>
 
-<.modal :if={@live_action in [:new, :edit]} id="team-modal" show on_cancel={JS.patch(~p"/teams")}>
+<.modal :if={@live_action in [:new]} id="team-modal" show on_cancel={JS.patch(~p"/teams")}>
   <.live_component
     module={Puls8Web.TeamLive.FormComponent}
     id={@team.id || :new}

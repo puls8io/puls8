@@ -60,21 +60,6 @@ defmodule Puls8Web.TeamLive.FormComponent do
     save_team(socket, socket.assigns.action, team_params)
   end
 
-  defp save_team(socket, :edit, team_params) do
-    case Accounts.update_team(socket.assigns.team, team_params) do
-      {:ok, team} ->
-        notify_parent({:saved, team})
-
-        {:noreply,
-         socket
-         |> put_flash(:info, "Team updated successfully")
-         |> push_patch(to: socket.assigns.patch)}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
-    end
-  end
-
   defp save_team(socket, :new, team_params) do
     case Accounts.create_team(team_params) do
       {:ok, team} ->

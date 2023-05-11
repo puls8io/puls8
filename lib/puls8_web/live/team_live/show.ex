@@ -17,5 +17,4 @@ defmodule Puls8Web.TeamLive.Show do
   end
 
   defp page_title(:show), do: "Show Team"
-  defp page_title(:edit), do: "Edit Team"
 end
