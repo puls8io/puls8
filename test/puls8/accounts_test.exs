@@ -1,5 +1,5 @@
 defmodule Puls8.AccountsTest do
-  use Puls8.DataCase, async: true
+  use Puls8.DataCase, async: false
 
   alias Puls8.Accounts
 
@@ -525,6 +525,22 @@ defmodule Puls8.AccountsTest do
 
       assert {:ok, user} = Accounts.add_membership(user, team2, [:owner])
       assert length(user.memberships) == 2
+    end
+
+    test "runs concurrently" do
+      user = user_fixture()
+      teams = 1..100 |> Enum.map(&team_fixture(slug: "team#{&1}"))
+
+      add_membership = fn team ->
+        assert {:ok, _} = Accounts.add_membership(user, team, [:owner])
+      end
+
+      teams
+      |> Task.async_stream(add_membership)
+      |> Enum.to_list()
+
+      user = Repo.reload!(user)
+      assert length(user.memberships) == 100
     end
   end
 

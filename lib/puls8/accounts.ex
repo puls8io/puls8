@@ -353,13 +353,27 @@ defmodule Puls8.Accounts do
 
   @doc """
   adds a user to the team using the provided roles
+
+  In order to avoid concurrent write canceling each others writes pg_advisory_xact_lock is used.
   """
   def add_membership(user, team, roles) do
-    mem = [%{team_id: team.id, roles: roles}] ++ Enum.map(user.memberships, &Map.from_struct/1)
+    Repo.transaction(fn ->
+      Repo.pg_advisory_xact_lock!(user.id)
+      user = Repo.reload!(user)
+      mem = [%{team_id: team.id, roles: roles}] ++ Enum.map(user.memberships, &Map.from_struct/1)
 
-    user
-    |> User.membership_changeset(mem)
-    |> Repo.update()
+      result =
+        user
+        |> User.membership_changeset(mem)
+        |> Repo.update()
+
+      case result do
+        {:ok, user} -> user
+        {:error, ch} -> Repo.rollback(ch)
+      end
+
+      result
+    end)
   end
 
   alias Puls8.Accounts.Team
