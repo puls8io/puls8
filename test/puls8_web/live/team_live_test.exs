@@ -12,36 +12,45 @@ defmodule Puls8Web.TeamLiveTest do
     %{team: team}
   end
 
+  defp create_user(_context) do
+    user = user_fixture()
+    %{user: user}
+  end
+
+  defp login_user(%{conn: conn, user: user}) do
+    %{conn: log_in_user(conn, user)}
+  end
+
   describe "Index" do
-    setup [:create_team]
+    setup [:create_team, :create_user, :login_user]
 
     test "lists all teams", %{conn: conn, team: team} do
       _team1 = team_fixture(%{slug: "plug-2"})
 
-      {:ok, _index_live, html} =
-        conn
-        |> log_in_user(user_fixture())
-        |> live(~p"/teams")
+      {:ok, _index_live, html} = live(conn, ~p"/teams")
 
       assert html =~ "Listing Teams"
       assert html =~ team.name
     end
 
-    test "redirects to first team if there is only one team", %{conn: conn, team: team} do
+    test "redirects to first team if there is only one team", %{
+      conn: conn,
+      team: team,
+      user: user
+    } do
       {:ok, _index_live, html} =
         conn
-        |> log_in_user(user_fixture())
+        |> log_in_user(user)
         |> live(~p"/teams/some-slug")
 
       assert html =~ team.name
     end
 
-    test "saves new team", %{conn: conn} do
+    test "saves new team for the current_user", %{conn: conn, user: user} do
       _team1 = team_fixture(%{slug: "plug-2"})
 
       {:ok, index_live, _html} =
         conn
-        |> log_in_user(user_fixture())
         |> live(~p"/teams")
 
       assert index_live |> element("a", "New Team") |> render_click() =~
@@ -62,6 +71,9 @@ defmodule Puls8Web.TeamLiveTest do
       html = render(index_live)
       assert html =~ "Team created successfully"
       assert html =~ "some name"
+
+      user = Puls8.Repo.reload!(user)
+      assert [_team] = user.memberships
     end
 
     test "deletes team in listing", %{conn: conn, team: team} do
@@ -74,7 +86,7 @@ defmodule Puls8Web.TeamLiveTest do
   end
 
   describe "Show" do
-    setup [:create_team]
+    setup [:create_team, :create_user, :login_user]
 
     test "displays team", %{conn: conn, team: team} do
       {:ok, _show_live, html} = live(conn, ~p"/teams/#{team}")

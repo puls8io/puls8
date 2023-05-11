@@ -61,7 +61,7 @@ defmodule Puls8Web.TeamLive.FormComponent do
   end
 
   defp save_team(socket, :new, team_params) do
-    case Accounts.create_team(team_params) do
+    case Accounts.create_team_for_user(team_params, socket.assigns.current_user) do
       {:ok, team} ->
         notify_parent({:saved, team})
 

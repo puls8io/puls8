@@ -371,8 +371,6 @@ defmodule Puls8.Accounts do
         {:ok, user} -> user
         {:error, ch} -> Repo.rollback(ch)
       end
-
-      result
     end)
   end
 
@@ -424,6 +422,25 @@ defmodule Puls8.Accounts do
     %Team{}
     |> Team.changeset(attrs)
     |> Repo.insert()
+  end
+
+  @doc """
+  Creates a team for the given user
+
+  In a single transaction create a team and add user to the
+  team to avoid orphan team
+  """
+  def create_team_for_user(attrs, user) do
+    Repo.transaction(fn ->
+      case create_team(attrs) do
+        {:ok, team} ->
+          add_membership(user, team, [:owner])
+          team
+
+        {:error, changeset} ->
+          changeset
+      end
+    end)
   end
 
   @doc """

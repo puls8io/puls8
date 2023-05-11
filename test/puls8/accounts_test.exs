@@ -544,6 +544,17 @@ defmodule Puls8.AccountsTest do
     end
   end
 
+  describe "create_team_for_user/2" do
+    test "with valid data" do
+      user = user_fixture()
+      attrs = %{name: "team", slug: "create-a-team-and-assign"}
+      assert {:ok, team} = Accounts.create_team_for_user(attrs, user)
+      user = Repo.reload!(user)
+      assert %{team_id: team_id} = hd(user.memberships)
+      assert team_id == team.id
+    end
+  end
+
   describe "teams" do
     alias Puls8.Accounts.Team
 
