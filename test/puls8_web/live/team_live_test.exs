@@ -91,11 +91,20 @@ defmodule Puls8Web.TeamLiveTest do
   describe "Show" do
     setup [:create_team, :create_user, :login_user]
 
-    test "displays team", %{conn: conn, team: team} do
+    test "displays team", %{conn: conn, team: team, user: user} do
+      add_member_fixture(user, team)
       {:ok, _show_live, html} = live(conn, ~p"/teams/#{team}")
 
       assert html =~ "Show Team"
       assert html =~ team.name
+    end
+
+    test "doesn't displays other team", %{conn: conn} do
+      team = team_fixture(slug: "others-team")
+
+      assert_raise Ecto.NoResultsError, fn ->
+        live(conn, ~p"/teams/#{team}")
+      end
     end
   end
 end
