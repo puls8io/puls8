@@ -351,6 +351,17 @@ defmodule Puls8.Accounts do
     end
   end
 
+  @doc """
+  adds a user to the team using the provided roles
+  """
+  def add_membership(user, team, roles) do
+    mem = [%{team_id: team.id, roles: roles}] ++ Enum.map(user.memberships, &Map.from_struct/1)
+
+    user
+    |> User.membership_changeset(mem)
+    |> Repo.update()
+  end
+
   alias Puls8.Accounts.Team
 
   @doc """

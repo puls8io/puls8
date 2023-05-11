@@ -506,6 +506,28 @@ defmodule Puls8.AccountsTest do
     end
   end
 
+  describe "add_membership/3" do
+    test "returns updated user" do
+      user = user_fixture()
+      team = team_fixture()
+      assert {:ok, updated_user} = Accounts.add_membership(user, team, [:owner])
+      assert [member] = updated_user.memberships
+      assert member.team_id == team.id
+      assert member.roles == [:owner]
+    end
+
+    test "appends the new membership" do
+      user = user_fixture()
+      team = team_fixture()
+      assert {:ok, user} = Accounts.add_membership(user, team, [:owner])
+
+      team2 = team_fixture(slug: "team2")
+
+      assert {:ok, user} = Accounts.add_membership(user, team2, [:owner])
+      assert length(user.memberships) == 2
+    end
+  end
+
   describe "teams" do
     alias Puls8.Accounts.Team
 

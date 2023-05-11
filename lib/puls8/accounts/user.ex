@@ -8,8 +8,17 @@ defmodule Puls8.Accounts.User do
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
+    embeds_many :memberships, Puls8.Accounts.Membership, on_replace: :delete
 
     timestamps()
+  end
+
+  def membership_changeset(user, memberships) do
+    attrs = %{memberships: memberships}
+
+    user
+    |> cast(attrs, [])
+    |> Ecto.Changeset.cast_embed(:memberships)
   end
 
   @doc """
