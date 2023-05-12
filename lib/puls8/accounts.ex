@@ -350,4 +350,157 @@ defmodule Puls8.Accounts do
       {:error, :user, changeset, _o} -> {:error, changeset}
     end
   end
+
+  @doc """
+  adds a user to the team using the provided roles
+
+  In order to avoid concurrent write canceling each others writes pg_advisory_xact_lock is used.
+  """
+  def add_membership(user, team, roles) do
+    Repo.transaction(fn ->
+      Repo.pg_advisory_xact_lock!(user.id)
+      user = Repo.reload!(user)
+      mem = [%{team_id: team.id, roles: roles}] ++ Enum.map(user.memberships, &Map.from_struct/1)
+
+      result =
+        user
+        |> User.membership_changeset(mem)
+        |> Repo.update()
+
+      case result do
+        {:ok, user} -> user
+        {:error, ch} -> Repo.rollback(ch)
+      end
+    end)
+  end
+
+  alias Puls8.Accounts.Team
+
+  @doc """
+  Returns the list of teams.
+
+  ## Examples
+
+      iex> list_teams()
+      [%Team{}, ...]
+
+  """
+  def list_teams do
+    Repo.all(Team)
+  end
+
+  @doc """
+  Returns the list of teams for the given user
+  """
+  def list_teams_for(user) do
+    team_ids = Enum.map(user.memberships, & &1.team_id)
+    Repo.all(from t in Team, where: t.id in ^team_ids)
+  end
+
+  @doc """
+  Gets a single team.
+
+  Raises `Ecto.NoResultsError` if the Team does not exist.
+
+  ## Examples
+
+      iex> get_team!(123)
+      %Team{}
+
+      iex> get_team!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_team!(id), do: Repo.get!(Team, id)
+  def get_team_by_slug!(slug), do: Repo.get_by!(Team, slug: slug)
+
+  def get_team_by_slug_for_user!(slug, user) do
+    team_ids = Enum.map(user.memberships, & &1.team_id)
+
+    Repo.one!(from t in Team, where: t.id in ^team_ids, where: t.slug == ^slug)
+  end
+
+  @doc """
+  Creates a team.
+
+  ## Examples
+
+      iex> create_team(%{field: value})
+      {:ok, %Team{}}
+
+      iex> create_team(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_team(attrs \\ %{}) do
+    %Team{}
+    |> Team.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Creates a team for the given user
+
+  In a single transaction create a team and add user to the
+  team to avoid orphan team
+  """
+  def create_team_for_user(attrs, user) do
+    Repo.transaction(fn ->
+      case create_team(attrs) do
+        {:ok, team} ->
+          add_membership(user, team, [:owner])
+          team
+
+        {:error, changeset} ->
+          changeset
+      end
+    end)
+  end
+
+  @doc """
+  Updates a team.
+
+  ## Examples
+
+      iex> update_team(team, %{field: new_value})
+      {:ok, %Team{}}
+
+      iex> update_team(team, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_team(%Team{} = team, attrs) do
+    team
+    |> Team.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a team.
+
+  ## Examples
+
+      iex> delete_team(team)
+      {:ok, %Team{}}
+
+      iex> delete_team(team)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_team(%Team{} = team) do
+    Repo.delete(team)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking team changes.
+
+  ## Examples
+
+      iex> change_team(team)
+      %Ecto.Changeset{data: %Team{}}
+
+  """
+  def change_team(%Team{} = team, attrs \\ %{}) do
+    Team.changeset(team, attrs)
+  end
 end

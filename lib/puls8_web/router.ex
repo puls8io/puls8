@@ -68,6 +68,10 @@ defmodule Puls8Web.Router do
       on_mount: [{Puls8Web.UserAuth, :ensure_authenticated}] do
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
+
+      live "/teams", TeamLive.Index, :index
+      live "/teams/new", TeamLive.Index, :new
+      live "/teams/:id", TeamLive.Show, :show
     end
   end
 

@@ -1,5 +1,5 @@
 defmodule Puls8.AccountsTest do
-  use Puls8.DataCase, async: true
+  use Puls8.DataCase, async: false
 
   alias Puls8.Accounts
 
@@ -503,6 +503,125 @@ defmodule Puls8.AccountsTest do
   describe "inspect/2 for the User module" do
     test "does not include password" do
       refute inspect(%User{password: "123456"}) =~ "password: \"123456\""
+    end
+  end
+
+  describe "add_membership/3" do
+    test "returns updated user" do
+      user = user_fixture()
+      team = team_fixture()
+      assert {:ok, updated_user} = Accounts.add_membership(user, team, [:owner])
+      assert [member] = updated_user.memberships
+      assert member.team_id == team.id
+      assert member.roles == [:owner]
+    end
+
+    test "appends the new membership" do
+      user = user_fixture()
+      team = team_fixture()
+      assert {:ok, user} = Accounts.add_membership(user, team, [:owner])
+
+      team2 = team_fixture(slug: "team2")
+
+      assert {:ok, user} = Accounts.add_membership(user, team2, [:owner])
+      assert length(user.memberships) == 2
+    end
+
+    test "runs concurrently" do
+      user = user_fixture()
+      teams = 1..100 |> Enum.map(&team_fixture(slug: "team#{&1}"))
+
+      add_membership = fn team ->
+        assert {:ok, _} = Accounts.add_membership(user, team, [:owner])
+      end
+
+      teams
+      |> Task.async_stream(add_membership)
+      |> Enum.to_list()
+
+      user = Repo.reload!(user)
+      assert length(user.memberships) == 100
+    end
+  end
+
+  describe "create_team_for_user/2" do
+    test "with valid data" do
+      user = user_fixture()
+      attrs = %{name: "team", slug: "create-a-team-and-assign"}
+      assert {:ok, team} = Accounts.create_team_for_user(attrs, user)
+      user = Repo.reload!(user)
+      assert %{team_id: team_id} = hd(user.memberships)
+      assert team_id == team.id
+    end
+  end
+
+  describe "teams" do
+    alias Puls8.Accounts.Team
+
+    import Puls8.AccountsFixtures
+
+    @invalid_attrs %{name: nil, slug: nil}
+
+    test "list_teams/0 returns all teams" do
+      team = team_fixture()
+      assert Accounts.list_teams() == [team]
+    end
+
+    test "list_teams_for/1 returns all teams for the user" do
+      _other_team = team_fixture(slug: "other-team")
+      team = team_fixture()
+      user = user_fixture()
+      add_member_fixture(user, team)
+      user = Repo.reload!(user)
+      assert Accounts.list_teams_for(user) == [team]
+    end
+
+    test "get_team!/1 returns the team with given id" do
+      team = team_fixture()
+      assert Accounts.get_team!(team.id) == team
+    end
+
+    test "get_team_by_slug!/1 returns the team with given slug" do
+      team = team_fixture()
+      assert Accounts.get_team_by_slug!(team.slug) == team
+    end
+
+    test "create_team/1 with valid data creates a team" do
+      valid_attrs = %{name: "some name", slug: "some-slug"}
+
+      assert {:ok, %Team{} = team} = Accounts.create_team(valid_attrs)
+      assert team.name == "some name"
+      assert team.slug == "some-slug"
+    end
+
+    test "create_team/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Accounts.create_team(@invalid_attrs)
+    end
+
+    test "update_team/2 with valid data updates the team" do
+      team = team_fixture()
+      update_attrs = %{name: "some updated name", slug: "some-updated-slug"}
+
+      assert {:ok, %Team{} = team} = Accounts.update_team(team, update_attrs)
+      assert team.name == "some updated name"
+      assert team.slug == "some-updated-slug"
+    end
+
+    test "update_team/2 with invalid data returns error changeset" do
+      team = team_fixture()
+      assert {:error, %Ecto.Changeset{}} = Accounts.update_team(team, @invalid_attrs)
+      assert team == Accounts.get_team!(team.id)
+    end
+
+    test "delete_team/1 deletes the team" do
+      team = team_fixture()
+      assert {:ok, %Team{}} = Accounts.delete_team(team)
+      assert_raise Ecto.NoResultsError, fn -> Accounts.get_team!(team.id) end
+    end
+
+    test "change_team/1 returns a team changeset" do
+      team = team_fixture()
+      assert %Ecto.Changeset{} = Accounts.change_team(team)
     end
   end
 end
