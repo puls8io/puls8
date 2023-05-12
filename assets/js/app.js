@@ -39,3 +39,24 @@ liveSocket.connect()
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
 
+
+import scrollIntoView from 'scroll-into-view-if-needed'
+
+
+window.onload = function () {
+  document.querySelectorAll('a[data-smooth-scroll="true"]').forEach(function(link) {
+    link.addEventListener('click', function(event) {
+      event.preventDefault(); // Prevent the default link click action
+
+      // Get the target element from the href attribute
+      const target = document.querySelector(this.getAttribute('href'));
+
+      // Scroll to the target
+      scrollIntoView(target, {
+        scrollMode: 'if-needed',
+        behavior: 'smooth',
+      })
+      history.pushState(null, null, this.getAttribute('href'));
+    })
+  })
+}
