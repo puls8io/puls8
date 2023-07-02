@@ -52,6 +52,7 @@ defmodule Puls8.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:slugify, "~> 1.3"},
+      {:uniq, "~> 0.1"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end

@@ -2,7 +2,7 @@ defmodule Puls8.Accounts.Team do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @primary_key {:id, :binary_id, autogenerate: true}
+  @primary_key {:id, Uniq.UUID, version: 7, autogenerate: true}
   @foreign_key_type :binary_id
   @derive {Phoenix.Param, key: :slug}
   schema "teams" do
