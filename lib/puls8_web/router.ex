@@ -72,6 +72,8 @@ defmodule Puls8Web.Router do
       live "/teams", TeamLive.Index, :index
       live "/teams/new", TeamLive.Index, :new
       live "/teams/:team_slug", TeamLive.Show, :show
+      live "/teams/:team_slug/services/new", ServiceLive.Index, :new
+      live "/teams/:team_slug/services/:service_scoped_id", ServiceLive.Show, :show
     end
   end
 

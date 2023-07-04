@@ -15,4 +15,9 @@ defmodule Puls8.Monitoring do
     |> Service.put_team(team)
     |> Repo.insert()
   end
+
+  @doc false
+  def change_service(%Service{} = service \\ %Service{}, attrs \\ %{}) do
+    Service.changeset(service, attrs)
+  end
 end
