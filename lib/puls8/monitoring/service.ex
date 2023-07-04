@@ -5,6 +5,7 @@ defmodule Puls8.Monitoring.Service do
 
   @primary_key {:id, Uniq.UUID, version: 7, autogenerate: true}
   @foreign_key_type :binary_id
+  @derive {Phoenix.Param, key: :scoped_id}
   schema "monitoring_services" do
     field :scoped_id, :integer, read_after_writes: true
     field :name, :string

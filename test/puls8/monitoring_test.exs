@@ -5,8 +5,13 @@ defmodule Puls8.MonitoringTest do
 
   import Puls8.AccountsFixtures
 
-  describe "itmes" do
+  describe "Service" do
     import Puls8.AccountsFixtures
+
+    test "Phoenix.Param.to_param/1" do
+      service = %Monitoring.Service{scoped_id: 100_393}
+      assert Phoenix.Param.to_param(service) == "100393"
+    end
 
     test "create_service/2" do
       team = team_fixture()
