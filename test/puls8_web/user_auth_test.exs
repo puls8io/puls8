@@ -148,6 +148,46 @@ defmodule Puls8Web.UserAuthTest do
     end
   end
 
+  describe "on_mount: ensure_authorized" do
+    test "authorize current_user based on a valid user_token and team_slug", %{
+      conn: conn,
+      user: user
+    } do
+      team = team_fixture()
+      {:ok, user} = add_member_fixture(user, team)
+
+      user_token = Accounts.generate_user_session_token(user)
+      session = conn |> put_session(:user_token, user_token) |> get_session()
+
+      {:cont, updated_socket} =
+        UserAuth.on_mount(
+          :ensure_authorized,
+          %{"team_slug" => team.slug},
+          session,
+          %LiveView.Socket{}
+        )
+
+      assert updated_socket.assigns.current_user.id == user.id
+      assert updated_socket.assigns.current_team.id == team.id
+    end
+
+    test "redirects to team page if user is not part of the team", %{conn: conn, user: user} do
+      team = team_fixture()
+
+      user_token = Accounts.generate_user_session_token(user)
+      session = conn |> put_session(:user_token, user_token) |> get_session()
+
+      socket = %LiveView.Socket{
+        endpoint: Puls8Web.Endpoint,
+        assigns: %{__changed__: %{}, flash: %{}}
+      }
+
+      assert_raise Ecto.NoResultsError, fn ->
+        UserAuth.on_mount(:ensure_authorized, %{"team_slug" => team.slug}, session, socket)
+      end
+    end
+  end
+
   describe "on_mount: ensure_authenticated" do
     test "authenticates current_user based on a valid user_token ", %{conn: conn, user: user} do
       user_token = Accounts.generate_user_session_token(user)

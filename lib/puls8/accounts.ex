@@ -417,7 +417,7 @@ defmodule Puls8.Accounts do
   def get_team_by_slug_for_user!(slug, user) do
     team_ids = Enum.map(user.memberships, & &1.team_id)
 
-    Repo.one!(from t in Team, where: t.id in ^team_ids, where: t.slug == ^slug)
+    Repo.one!(from(t in Team, where: t.id in ^team_ids, where: t.slug == ^slug))
   end
 
   @doc """

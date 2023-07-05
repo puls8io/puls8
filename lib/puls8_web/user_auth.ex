@@ -122,6 +122,10 @@ defmodule Puls8Web.UserAuth do
       on user_token.
       Redirects to login page if there's no logged user.
 
+    * `:ensure_authorized` - Authorize the current_user has access
+      to the team_slug in the param and assign current_team
+      Redirects to team page if the user is not member of team
+
     * `:redirect_if_user_is_authenticated` - Authenticates the user from the session.
       Redirects to signed_in_path if there's a logged user.
 
@@ -144,11 +148,29 @@ defmodule Puls8Web.UserAuth do
       end
   """
   def on_mount(:mount_current_user, _params, session, socket) do
-    {:cont, mount_current_user(session, socket)}
+    {:cont, mount_current_user(socket, session)}
+  end
+
+  def on_mount(:ensure_authorized, %{"team_slug" => team_slug}, session, socket) do
+    socket =
+      socket
+      |> mount_current_user(session)
+      |> mount_current_team(team_slug)
+
+    if socket.assigns.current_team do
+      {:cont, socket}
+    else
+      socket =
+        socket
+        |> Phoenix.LiveView.put_flash(:error, "Team not found")
+        |> Phoenix.LiveView.redirect(to: ~p"/teams/")
+
+      {:halt, socket}
+    end
   end
 
   def on_mount(:ensure_authenticated, _params, session, socket) do
-    socket = mount_current_user(session, socket)
+    socket = mount_current_user(socket, session)
 
     if socket.assigns.current_user do
       {:cont, socket}
@@ -163,7 +185,7 @@ defmodule Puls8Web.UserAuth do
   end
 
   def on_mount(:redirect_if_user_is_authenticated, _params, session, socket) do
-    socket = mount_current_user(session, socket)
+    socket = mount_current_user(socket, session)
 
     if socket.assigns.current_user do
       {:halt, Phoenix.LiveView.redirect(socket, to: signed_in_path(socket))}
@@ -172,10 +194,18 @@ defmodule Puls8Web.UserAuth do
     end
   end
 
-  defp mount_current_user(session, socket) do
+  defp mount_current_user(socket, session) do
     Phoenix.Component.assign_new(socket, :current_user, fn ->
       if user_token = session["user_token"] do
         Accounts.get_user_by_session_token(user_token)
+      end
+    end)
+  end
+
+  defp mount_current_team(socket, team_slug) do
+    Phoenix.Component.assign_new(socket, :current_team, fn ->
+      if current_user = socket.assigns.current_user do
+        Accounts.get_team_by_slug_for_user!(team_slug, current_user)
       end
     end)
   end
