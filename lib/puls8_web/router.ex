@@ -71,6 +71,10 @@ defmodule Puls8Web.Router do
 
       live "/teams", TeamLive.Index, :index
       live "/teams/new", TeamLive.Index, :new
+    end
+
+    live_session :require_access_to_the_team,
+      on_mount: [{Puls8Web.UserAuth, :ensure_authorized}] do
       live "/teams/:team_slug", TeamLive.Show, :show
       live "/teams/:team_slug/services/new", ServiceLive.Index, :new
       live "/teams/:team_slug/services/:service_scoped_id", ServiceLive.Show, :show

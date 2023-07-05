@@ -13,8 +13,7 @@ defmodule Puls8Web.ServiceLive.Index do
 
   @impl Phoenix.LiveView
   def mount(_params, _session, socket) do
-    # TODO: load the right team
-    team = hd(Puls8.Accounts.list_teams_for(socket.assigns.current_user))
+    team = socket.assigns.current_team
 
     changeset = Monitoring.change_service()
 
