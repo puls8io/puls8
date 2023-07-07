@@ -38,4 +38,17 @@ defmodule Puls8.MonitoringTest do
       assert service.scoped_id == 2
     end
   end
+
+  describe "Integration" do
+    import Puls8.MonitoringFixtures
+
+    test "create_integration/2" do
+      attrs = %{name: "Hello World", type: :grafana}
+      service = service_fixture()
+      assert {:ok, integration} = Monitoring.create_intergration(service, attrs)
+      assert integration.name == "Hello World"
+      assert integration.type == :grafana
+      assert integration.service_id == service.id
+    end
+  end
 end

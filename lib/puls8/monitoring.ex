@@ -31,4 +31,13 @@ defmodule Puls8.Monitoring do
     query = from q in Service, where: q.scoped_id == ^scoped_id, where: q.team_id == ^team_id
     Repo.one!(query)
   end
+
+  alias Puls8.Monitoring.Integration
+
+  def create_intergration(service, attrs \\ %{}) do
+    %Integration{}
+    |> Integration.changeset(attrs)
+    |> Integration.put_service(service)
+    |> Repo.insert()
+  end
 end
