@@ -46,7 +46,8 @@ defmodule Puls8Web.TeamLiveTest do
       user: user
     } do
       add_member_fixture(user, team)
-      {_, {:live_redirect, %{to: "/teams/some-slug"}}} = live(conn, ~p"/teams")
+      to = ~p"/teams/#{team}"
+      {_, {:live_redirect, %{to: ^to}}} = live(conn, ~p"/teams")
     end
 
     test "saves new team for the current_user", %{conn: conn, user: user} do

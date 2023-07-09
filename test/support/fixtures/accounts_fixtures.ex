@@ -37,7 +37,7 @@ defmodule Puls8.AccountsFixtures do
       attrs
       |> Enum.into(%{
         name: "some name",
-        slug: "some-slug"
+        slug: "some-slug#{System.unique_integer()}"
       })
       |> Puls8.Accounts.create_team()
 

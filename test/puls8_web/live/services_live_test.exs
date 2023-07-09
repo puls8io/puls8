@@ -38,7 +38,7 @@ defmodule Puls8Web.Live.ServicesLiveTest do
       |> render_submit()
 
       {path, _flash} = assert_redirect(view)
-      assert path == ~p"/teams/some-slug/services/1"
+      assert path == ~p"/teams/#{team}/services/1"
     end
   end
 

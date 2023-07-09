@@ -4,6 +4,7 @@ defmodule Puls8.MonitoringTest do
   alias Puls8.Monitoring
 
   import Puls8.AccountsFixtures
+  import Puls8.MonitoringFixtures
 
   describe "Service" do
     import Puls8.AccountsFixtures
@@ -36,6 +37,20 @@ defmodule Puls8.MonitoringTest do
       assert service.scoped_id == 1
       {:ok, service} = Monitoring.create_service(team2, valid_attrs)
       assert service.scoped_id == 2
+    end
+
+    test "get_service_by_team! only works with scope of team" do
+      service1 = service_fixture()
+      service1_id = service1.id
+
+      service2 = service_fixture()
+      service2_id = service2.id
+
+      assert %Monitoring.Service{id: ^service1_id} =
+               Monitoring.get_service_by_team!(service1.scoped_id, service1.team)
+
+      assert %Monitoring.Service{id: ^service2_id} =
+               Monitoring.get_service_by_team!(service2.scoped_id, service2.team)
     end
   end
 

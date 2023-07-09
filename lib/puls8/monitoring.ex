@@ -3,8 +3,6 @@ defmodule Puls8.Monitoring do
   The Monitoring context.
   """
 
-  import Ecto.Query
-
   alias Puls8.Repo
   alias Puls8.Monitoring.Service
 
@@ -27,9 +25,10 @@ defmodule Puls8.Monitoring do
   Find a service by scoped_id and team
   """
   def get_service_by_team!(scoped_id, team) do
-    team_id = team.id
-    query = from q in Service, where: q.scoped_id == ^scoped_id, where: q.team_id == ^team_id
-    Repo.one!(query)
+    scoped_id
+    |> Service.Query.by_scoped_id()
+    |> Service.Query.for_team(team)
+    |> Repo.one!()
   end
 
   alias Puls8.Monitoring.Integration
