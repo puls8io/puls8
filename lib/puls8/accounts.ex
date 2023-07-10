@@ -393,8 +393,9 @@ defmodule Puls8.Accounts do
   Returns the list of teams for the given user
   """
   def list_teams_for(user) do
-    team_ids = Enum.map(user.memberships, & &1.team_id)
-    Repo.all(from t in Team, where: t.id in ^team_ids)
+    user
+    |> Team.Query.for_user()
+    |> Repo.all()
   end
 
   @doc """
