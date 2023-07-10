@@ -39,4 +39,8 @@ defmodule Puls8.Monitoring do
     |> Integration.put_service(service)
     |> Repo.insert()
   end
+
+  def change_integration(%Integration{} = integration \\ %Integration{}, attrs \\ %{}) do
+    Integration.changeset(integration, attrs)
+  end
 end
