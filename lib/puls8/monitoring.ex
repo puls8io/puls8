@@ -44,4 +44,14 @@ defmodule Puls8.Monitoring do
   def change_integration(%Integration{} = integration \\ %Integration{}, attrs \\ %{}) do
     Integration.changeset(integration, attrs)
   end
+
+  alias Puls8.Monitoring.IntegrationRule
+
+  def create_intergration_rule(%Integration{} = integration, %Service{} = service, attrs) do
+    %IntegrationRule{}
+    |> IntegrationRule.changeset(attrs)
+    |> IntegrationRule.put_integreation(integration)
+    |> IntegrationRule.put_service(service)
+    |> Repo.insert()
+  end
 end

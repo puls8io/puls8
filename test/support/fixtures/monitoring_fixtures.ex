@@ -22,4 +22,18 @@ defmodule Puls8.MonitoringFixtures do
 
     services
   end
+
+  def integration_fixture(attrs \\ %{}) do
+    team = attrs[:team] || Puls8.AccountsFixtures.team_fixture()
+
+    attrs =
+      attrs
+      |> Enum.into(%{
+        name: "Grafana",
+        type: :grafana
+      })
+
+    {:ok, integration} = Puls8.Monitoring.create_intergration(team, attrs)
+    integration
+  end
 end
