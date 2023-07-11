@@ -1,4 +1,4 @@
-defmodule Puls8Web.ServiceIntegrationLive.Index do
+defmodule Puls8Web.IntegrationLive.Index do
   use Puls8Web, :live_view
   alias Puls8.Monitoring
 
@@ -17,33 +17,26 @@ defmodule Puls8Web.ServiceIntegrationLive.Index do
   end
 
   @impl Phoenix.LiveView
-  def mount(params, _session, socket) do
+  def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:team_slug, params["team_slug"])
-     |> assign_changeset()
-     |> assign_service(params)}
+     |> assign_changeset()}
   end
 
   @impl Phoenix.LiveView
   def handle_event("save", %{"integration" => params}, socket) do
-    service = socket.assigns.service
+    team = socket.assigns.current_team
 
-    case Monitoring.create_intergration(service, params) do
+    case Monitoring.create_intergration(team, params) do
       {:ok, _integration} ->
         {:noreply,
          push_navigate(socket,
-           to: ~p"/teams/#{socket.assigns.team_slug}/services/#{service}/integrations"
+           to: ~p"/teams/#{team}/integrations"
          )}
 
       {:error, changeset} ->
         {:noreply, assign_changeset(socket, changeset)}
     end
-  end
-
-  defp assign_service(socket, params) do
-    team = socket.assigns.current_team
-    assign(socket, :service, Monitoring.get_service_by_team!(params["service_scoped_id"], team))
   end
 
   defp assign_changeset(socket, changeset \\ Monitoring.change_integration()) do
