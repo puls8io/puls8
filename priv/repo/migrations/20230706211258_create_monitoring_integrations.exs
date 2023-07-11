@@ -7,12 +7,11 @@ defmodule Puls8.Monitoring.ServiceIntegration do
       add :name, :string, null: false
       add :type, :integer, null: false
 
-      add :service_id, references(:monitoring_services, on_delete: :delete_all, type: :binary_id),
-        null: false
+      add :team_id, references(:teams, on_delete: :delete_all, type: :binary_id), null: false
 
       timestamps()
     end
 
-    create index(:monitoring_integrations, [:service_id])
+    create index(:monitoring_integrations, [:team_id])
   end
 end

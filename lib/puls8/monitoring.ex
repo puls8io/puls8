@@ -4,12 +4,13 @@ defmodule Puls8.Monitoring do
   """
 
   alias Puls8.Repo
+  alias Puls8.Accounts
   alias Puls8.Monitoring.Service
 
   @doc """
   Create a new service.
   """
-  def create_service(team, attrs \\ %{}) do
+  def create_service(%Accounts.Team{} = team, attrs \\ %{}) do
     %Service{}
     |> Service.changeset(attrs)
     |> Service.put_team(team)
@@ -24,7 +25,7 @@ defmodule Puls8.Monitoring do
   @doc """
   Find a service by scoped_id and team
   """
-  def get_service_by_team!(scoped_id, team) do
+  def get_service_by_team!(scoped_id, %Accounts.Team{} = team) do
     scoped_id
     |> Service.Query.by_scoped_id()
     |> Service.Query.for_team(team)
@@ -33,10 +34,10 @@ defmodule Puls8.Monitoring do
 
   alias Puls8.Monitoring.Integration
 
-  def create_intergration(service, attrs \\ %{}) do
+  def create_intergration(%Accounts.Team{} = team, attrs \\ %{}) do
     %Integration{}
     |> Integration.changeset(attrs)
-    |> Integration.put_service(service)
+    |> Integration.put_team(team)
     |> Repo.insert()
   end
 

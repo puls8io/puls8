@@ -59,11 +59,11 @@ defmodule Puls8.MonitoringTest do
 
     test "create_integration/2" do
       attrs = %{name: "Hello World", type: :grafana}
-      service = service_fixture()
-      assert {:ok, integration} = Monitoring.create_intergration(service, attrs)
+      team = team_fixture()
+      assert {:ok, integration} = Monitoring.create_intergration(team, attrs)
       assert integration.name == "Hello World"
       assert integration.type == :grafana
-      assert integration.service_id == service.id
+      assert integration.team_id == team.id
     end
   end
 end
