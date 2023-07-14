@@ -45,8 +45,10 @@ defmodule Puls8Web.ConnCase do
   test context.
   """
   def register_and_log_in_user(%{conn: conn}) do
+    team = Puls8.AccountsFixtures.team_fixture()
     user = Puls8.AccountsFixtures.user_fixture()
-    %{conn: log_in_user(conn, user), user: user}
+    {:ok, user} = Puls8.AccountsFixtures.add_member_fixture(user, team)
+    %{conn: log_in_user(conn, user), user: user, team: team}
   end
 
   @doc """

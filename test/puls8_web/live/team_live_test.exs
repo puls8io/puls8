@@ -90,10 +90,9 @@ defmodule Puls8Web.TeamLiveTest do
   end
 
   describe "Show" do
-    setup [:create_team, :create_user, :login_user]
+    setup [:register_and_log_in_user]
 
-    test "displays team", %{conn: conn, team: team, user: user} do
-      add_member_fixture(user, team)
+    test "displays team", %{conn: conn, team: team} do
       {:ok, _show_live, html} = live(conn, ~p"/teams/#{team}")
 
       assert html =~ "Show Team"
