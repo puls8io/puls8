@@ -54,29 +54,12 @@ defmodule Puls8.MonitoringTest do
     end
   end
 
-  describe "Integration" do
-    import Puls8.MonitoringFixtures
-
-    test "create_integration/2" do
-      attrs = %{name: "Hello World", type: :grafana}
-      team = team_fixture()
-      assert {:ok, integration} = Monitoring.create_intergration(team, attrs)
-      assert integration.name == "Hello World"
-      assert integration.type == :grafana
-      assert integration.team_id == team.id
-    end
-  end
-
   describe "IntegrationRule" do
     import Puls8.MonitoringFixtures
 
-    test "create_intergration_rule/2" do
-      integration = integration_fixture()
       service = service_fixture()
 
       attrs = %{"labels" => %{"job" => "myapp", "alertname" => "www status"}}
-      assert {:ok, rule} = Monitoring.create_intergration_rule(integration, service, attrs)
-      assert rule.integration_id == integration.id
       assert rule.service_id == service.id
     end
   end

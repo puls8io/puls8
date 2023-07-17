@@ -32,26 +32,9 @@ defmodule Puls8.Monitoring do
     |> Repo.one!()
   end
 
-  alias Puls8.Monitoring.Integration
 
-  def create_intergration(%Accounts.Team{} = team, attrs \\ %{}) do
-    %Integration{}
-    |> Integration.changeset(attrs)
-    |> Integration.put_team(team)
     |> Repo.insert()
   end
 
-  def change_integration(%Integration{} = integration \\ %Integration{}, attrs \\ %{}) do
-    Integration.changeset(integration, attrs)
-  end
-
-  alias Puls8.Monitoring.IntegrationRule
-
-  def create_intergration_rule(%Integration{} = integration, %Service{} = service, attrs) do
-    %IntegrationRule{}
-    |> IntegrationRule.changeset(attrs)
-    |> IntegrationRule.put_integreation(integration)
-    |> IntegrationRule.put_service(service)
-    |> Repo.insert()
   end
 end
