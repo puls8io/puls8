@@ -54,12 +54,39 @@ defmodule Puls8.MonitoringTest do
     end
   end
 
-  describe "IntegrationRule" do
+  describe "AlertRoute" do
     import Puls8.MonitoringFixtures
+    alias Puls8.Monitoring.AlertRoute
 
+    test "change_alert_route/2 with invalid attrs" do
+      alert_route = %AlertRoute{}
+      invalid_attr = %{}
+
+      changeset = Monitoring.change_alert_route(alert_route, invalid_attr)
+      refute changeset.valid?
+      assert errors_on(changeset) == %{labels: ["can't be blank"], type: ["can't be blank"]}
+    end
+
+    test "change_alert_route/2 with valid attrs" do
+      alert_route = %AlertRoute{}
+      valid_attr = %{type: :grafana, labels: %{1 => %{key: "mykey", value: "myvalue"}}}
+
+      changeset = Monitoring.change_alert_route(alert_route, valid_attr)
+      assert changeset.valid?
+    end
+
+    test "create_alert_route/2" do
       service = service_fixture()
 
-      attrs = %{"labels" => %{"job" => "myapp", "alertname" => "www status"}}
+      attrs = %{
+        labels: [
+          %{"key" => "job", "value" => "myapp"},
+          %{"key" => "alertname", "value" => "www status"}
+        ],
+        type: :grafana
+      }
+
+      assert {:ok, rule} = Monitoring.create_alert_route(service, attrs)
       assert rule.service_id == service.id
     end
   end

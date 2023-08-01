@@ -32,9 +32,19 @@ defmodule Puls8.Monitoring do
     |> Repo.one!()
   end
 
+  alias Puls8.Monitoring.AlertRoute
 
+  def create_alert_route(%Service{} = service, attrs) do
+    %AlertRoute{}
+    |> AlertRoute.changeset(attrs)
+    |> AlertRoute.put_service(service)
     |> Repo.insert()
   end
 
+  def change_alert_route(
+        %AlertRoute{} = alert_route \\ %AlertRoute{},
+        attrs \\ %{}
+      ) do
+    AlertRoute.changeset(alert_route, attrs)
   end
 end
