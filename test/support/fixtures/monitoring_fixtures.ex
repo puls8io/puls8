@@ -22,4 +22,15 @@ defmodule Puls8.MonitoringFixtures do
 
     services
   end
+
+  def alert_rule_fixture(attrs \\ %{}) do
+    service = attrs[:service] || service_fixture()
+
+    attrs =
+      attrs
+      |> Enum.into(%{type: :grafana, labels: [%{"key" => "host", "value" => "localhost"}]})
+
+    {:ok, alert_rule} = Puls8.Monitoring.create_alert_route(service, attrs)
+    alert_rule
+  end
 end

@@ -41,6 +41,10 @@ defmodule Puls8.Monitoring do
     |> Repo.insert()
   end
 
+  def list_alert_routes do
+    Repo.all(AlertRoute)
+  end
+
   def change_alert_route(
         %AlertRoute{} = alert_route \\ %AlertRoute{},
         attrs \\ %{}
