@@ -79,9 +79,13 @@ defmodule Puls8Web.Router do
       live "/teams/:team_slug/services/new", ServiceLive.Index, :new
       live "/teams/:team_slug/services/:service_scoped_id", ServiceLive.Show, :show
 
-      live "/teams/:team_slug/services/:service_scoped_id/alert-rules",
-           ServiceAlertRuleLive.Index,
+      live "/teams/:team_slug/services/:service_scoped_id/alert-routes",
+           ServiceAlertRouteLive.Index,
            :index
+
+      live "/teams/:team_slug/services/:service_scoped_id/alert-routes/new",
+           ServiceAlertRouteLive.Index,
+           :new
     end
   end
 
