@@ -15,7 +15,7 @@ defmodule Puls8.IncidentsFixtures do
         fingerprint: "some fingerprint",
         payload: %{},
         started_at: ~U[2023-08-14 21:16:00.000000Z],
-        status: 42,
+        status: :firing,
         summary: "some summary",
         type: :grafana
       })

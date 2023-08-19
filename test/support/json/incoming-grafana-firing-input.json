@@ -1,0 +1,54 @@
+{
+  "receiver": "grafana-default-email",
+  "status": "firing",
+  "alerts": [
+    {
+      "status": "firing",
+      "labels": {
+        "alertname": "Process count",
+        "grafana_folder": "Hello",
+        "instance": "host.docker.internal:4000",
+        "job": "app"
+      },
+      "annotations": {
+        "description": "Surge in process count",
+        "summary": "Surge in process count"
+      },
+      "startsAt": "2023-07-10T20:48:00Z",
+      "endsAt": "0001-01-01T00:00:00Z",
+      "generatorURL": "http://localhost:3000/alerting/grafana/b99f15ea-320a-49ea-97e3-175f8bfd1b78/view?orgId=1",
+      "fingerprint": "229a1ee3c690dec0",
+      "silenceURL": "http://localhost:3000/alerting/silence/new?alertmanager=grafana&matcher=alertname%3DProcess+count&matcher=grafana_folder%3DHello&matcher=instance%3Dhost.docker.internal%3A4000&matcher=job%3Dapp&orgId=1",
+      "dashboardURL": "",
+      "panelURL": "",
+      "values": {
+        "A": 1395,
+        "B": 1395,
+        "C": 1
+      },
+      "valueString": "[ var='B' labels={__name__=demo_app_prom_ex_beam_stats_process_count, instance=host.docker.internal:4000, job=app} value=1395 ], [ var='C' labels={__name__=demo_app_prom_ex_beam_stats_process_count, instance=host.docker.internal:4000, job=app} value=1 ], [ var='A' labels={__name__=demo_app_prom_ex_beam_stats_process_count, instance=host.docker.internal:4000, job=app} value=1395 ]"
+    }
+  ],
+  "groupLabels": {
+    "alertname": "Process count",
+    "grafana_folder": "Hello"
+  },
+  "commonLabels": {
+    "alertname": "Process count",
+    "grafana_folder": "Hello",
+    "instance": "host.docker.internal:4000",
+    "job": "app"
+  },
+  "commonAnnotations": {
+    "description": "Surge in process count",
+    "summary": "Surge in process count"
+  },
+  "externalURL": "http://localhost:3000/",
+  "version": "1",
+  "groupKey": "{}:{alertname=\"Process count\", grafana_folder=\"Hello\"}",
+  "truncatedAlerts": 0,
+  "orgId": 1,
+  "title": "[FIRING:1] Process count Hello (host.docker.internal:4000 app)",
+  "state": "alerting",
+  "message": "**Firing**\n\nValue: A=1395, B=1395, C=1\nLabels:\n - alertname = Process count\n - grafana_folder = Hello\n - instance = host.docker.internal:4000\n - job = app\nAnnotations:\n - description = Surge in process count\n - summary = Surge in process count\nSource: http://localhost:3000/alerting/grafana/b99f15ea-320a-49ea-97e3-175f8bfd1b78/view?orgId=1\nSilence: http://localhost:3000/alerting/silence/new?alertmanager=grafana&matcher=alertname%3DProcess+count&matcher=grafana_folder%3DHello&matcher=instance%3Dhost.docker.internal%3A4000&matcher=job%3Dapp&orgId=1\n"
+}

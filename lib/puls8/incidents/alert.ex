@@ -11,7 +11,7 @@ defmodule Puls8.Incidents.Alert do
     field :fingerprint, :string
     field :payload, :map
     field :started_at, :utc_datetime_usec
-    field :status, :integer
+    field :status, Ecto.Enum, values: [firing: 0]
     field :summary, :string
     field :type, Ecto.Enum, values: [grafana: 0, prometheus: 1]
     belongs_to :team, Accounts.Team

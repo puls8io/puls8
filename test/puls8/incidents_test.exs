@@ -26,7 +26,7 @@ defmodule Puls8.IncidentsTest do
         fingerprint: "some fingerprint",
         payload: %{},
         started_at: ~U[2023-08-14 21:16:00.000000Z],
-        status: 42,
+        status: :firing,
         summary: "some summary",
         type: :grafana
       }
@@ -36,7 +36,7 @@ defmodule Puls8.IncidentsTest do
       assert alert.fingerprint == "some fingerprint"
       assert alert.payload == %{}
       assert alert.started_at == ~U[2023-08-14 21:16:00.000000Z]
-      assert alert.status == 42
+      assert alert.status == :firing
       assert alert.summary == "some summary"
       assert alert.type == :grafana
     end
@@ -53,7 +53,7 @@ defmodule Puls8.IncidentsTest do
         ended_at: ~U[2023-08-15 21:16:00.000000Z],
         fingerprint: "some updated fingerprint",
         payload: %{},
-        status: 43,
+        status: :firing,
         summary: "some updated summary",
         type: :prometheus
       }
@@ -63,7 +63,7 @@ defmodule Puls8.IncidentsTest do
       assert alert.fingerprint == "some updated fingerprint"
       assert alert.payload == %{}
       assert alert.started_at == alert.started_at
-      assert alert.status == 43
+      assert alert.status == :firing
       assert alert.summary == "some updated summary"
       assert alert.type == :prometheus
     end

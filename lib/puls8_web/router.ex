@@ -24,9 +24,10 @@ defmodule Puls8Web.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", Puls8Web do
-  #   pipe_through :api
-  # end
+  scope "/api", Puls8Web.Api do
+    pipe_through :api
+    post "/webhooks/:team_id/alerts/grafana", WebhookAlertController, :grafana
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:puls8, :dev_routes) do

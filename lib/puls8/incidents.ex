@@ -44,4 +44,8 @@ defmodule Puls8.Incidents do
     |> Alert.changeset(attrs)
     |> Repo.update()
   end
+
+  def get_alert!(id) do
+    Repo.get!(Alert, id)
+  end
 end
