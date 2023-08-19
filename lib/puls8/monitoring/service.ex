@@ -9,7 +9,7 @@ defmodule Puls8.Monitoring.Service do
   schema "monitoring_services" do
     field :scoped_id, :integer, read_after_writes: true
     field :name, :string
-    belongs_to :team, Puls8.Accounts.Team
+    belongs_to :team, Accounts.Team
 
     timestamps()
   end
