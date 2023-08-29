@@ -89,5 +89,30 @@ defmodule Puls8.MonitoringTest do
       assert {:ok, rule} = Monitoring.create_alert_route(service, attrs)
       assert rule.service_id == service.id
     end
+
+    test "list_alert_route_by_labels/2 when the labels match" do
+      labels = [
+        %{"key" => "job", "value" => "myapp"},
+        %{"key" => "alertname", "value" => "www status"}
+      ]
+
+      expected_alert_rule = alert_rule_fixture(labels: labels)
+
+      assert [alert_rule] = Monitoring.list_alert_route_by_labels(labels)
+
+      assert alert_rule.id == expected_alert_rule.id
+    end
+
+    test "list_alert_route_by_labels/2 when the labels doesn't match" do
+      labels = [
+        %{"key" => "job", "value" => "myapp"}
+      ]
+
+      _fixture = alert_rule_fixture(labels: labels)
+
+      assert Monitoring.list_alert_route_by_labels([
+               %{"key" => "alertname", "value" => "www status"}
+             ]) == []
+    end
   end
 end

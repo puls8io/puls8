@@ -51,4 +51,10 @@ defmodule Puls8.Monitoring do
       ) do
     AlertRoute.changeset(alert_route, attrs)
   end
+
+  def list_alert_route_by_labels(labels) do
+    labels
+    |> Puls8.Monitoring.AlertRoute.Query.by_labels()
+    |> Repo.all()
+  end
 end
