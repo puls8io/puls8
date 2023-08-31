@@ -58,6 +58,8 @@ defmodule Puls8.MonitoringTest do
     import Puls8.MonitoringFixtures
     alias Puls8.Monitoring.AlertRoute
 
+    setup [:create_team, :create_service]
+
     test "change_alert_route/2 with invalid attrs" do
       alert_route = %AlertRoute{}
       invalid_attr = %{}
@@ -90,29 +92,104 @@ defmodule Puls8.MonitoringTest do
       assert rule.service_id == service.id
     end
 
-    test "list_alert_route_by_labels/2 when the labels match" do
+    test "list_alert_route_by_labels/2 when all labels match", %{team: team, service: service} do
       labels = [
         %{"key" => "job", "value" => "myapp"},
         %{"key" => "alertname", "value" => "www status"}
       ]
 
-      expected_alert_rule = alert_rule_fixture(labels: labels)
+      expected_alert_rule = alert_rule_fixture(labels: labels, type: :grafana, service: service)
 
-      assert [alert_rule] = Monitoring.list_alert_route_by_labels(labels)
+      assert [alert_rule] = Monitoring.list_alert_route_by_labels(team, :grafana, labels)
 
       assert alert_rule.id == expected_alert_rule.id
     end
 
-    test "list_alert_route_by_labels/2 when the labels doesn't match" do
+    test "list_alert_route_by_labels/2 when labels partially match", %{
+      team: team,
+      service: service
+    } do
+      labels = [
+        %{"key" => "job", "value" => "myapp 13331"},
+        %{"key" => "alertname", "value" => "www status 23f"}
+      ]
+
+      expected_alert_rule = alert_rule_fixture(labels: labels, service: service)
+      _fixture = alert_rule_fixture()
+
+      extra_labels = labels ++ [%{"key" => "foo", "value" => "bar"}]
+
+      assert [alert_rule] = Monitoring.list_alert_route_by_labels(team, :grafana, extra_labels)
+
+      assert alert_rule.id == expected_alert_rule.id
+    end
+
+    test "list_alert_route_by_labels/2 when the labels are different", %{
+      team: team,
+      service: service
+    } do
       labels = [
         %{"key" => "job", "value" => "myapp"}
       ]
 
-      _fixture = alert_rule_fixture(labels: labels)
+      _fixture_01 = alert_rule_fixture(labels: labels, service: service)
+      _fixture_02 = alert_rule_fixture()
 
-      assert Monitoring.list_alert_route_by_labels([
+      assert Monitoring.list_alert_route_by_labels(team, :grafana, [
                %{"key" => "alertname", "value" => "www status"}
              ]) == []
     end
+
+    test "list_alert_route_by_labels/2 when not all expected lables are passed", %{
+      team: team,
+      service: service
+    } do
+      labels = [
+        %{"key" => "job", "value" => "myapp"},
+        %{"key" => "alertname", "value" => "www status"}
+      ]
+
+      _fixture_01 = alert_rule_fixture(labels: labels, service: service)
+      _fixture_02 = alert_rule_fixture()
+
+      assert Monitoring.list_alert_route_by_labels(team, :grafana, [
+               %{"key" => "job", "value" => "myapp"}
+             ]) == []
+    end
+
+    test "list_alert_route_by_labels/2 when team doesn't match", %{
+      team: team
+    } do
+      labels = [
+        %{"key" => "job", "value" => "myapp"},
+        %{"key" => "alertname", "value" => "www status"}
+      ]
+
+      _fixture = alert_rule_fixture(labels: labels, type: :grafana)
+
+      assert Monitoring.list_alert_route_by_labels(team, :grafana, labels) == []
+    end
+
+    test "list_alert_route_by_labels/2 when type doesn't match", %{
+      team: team,
+      service: service
+    } do
+      labels = [
+        %{"key" => "job", "value" => "myapp"},
+        %{"key" => "alertname", "value" => "www status"}
+      ]
+
+      _fixture = alert_rule_fixture(labels: labels, type: :grafana, service: service)
+
+      assert Monitoring.list_alert_route_by_labels(team, :prometheus, labels) == []
+    end
+  end
+
+  defp create_team(_) do
+    {:ok, %{team: team_fixture()}}
+  end
+
+  defp create_service(%{team: team}) do
+    {:ok, %{service: service_fixture(team: team)}}
   end
 end
